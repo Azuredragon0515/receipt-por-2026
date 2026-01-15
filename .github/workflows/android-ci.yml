@@ -3,6 +3,8 @@ name: Android CI
 on:
   pull_request:
     branches: [ main ]
+  push:
+    branches: [ main ]
 
 jobs:
   build:
@@ -18,8 +20,8 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Verify Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v3
 
-      - name: Build
-        run: ./gradlew build --stacktrace
+      - name: Warm up
+        run: ./gradlew help --no-daemon
