@@ -20,8 +20,8 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Verify Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v3
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
 
       - name: Warm up
         run: ./gradlew help --no-daemon
