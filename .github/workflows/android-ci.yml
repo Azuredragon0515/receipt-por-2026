@@ -25,3 +25,9 @@ jobs:
 
       - name: Warm up
         run: ./gradlew help --no-daemon
+        
+      - name: Assemble Debug
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
+        
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest --stacktrace --no-daemon
