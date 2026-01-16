@@ -11,16 +11,15 @@ import kotlinx.coroutines.flow.Flow
 interface ContactDao {
     @Query("SELECT * FROM contacts ORDER BY updatedAt DESC")
     fun observeAll(): Flow<List<ContactEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(vararg items: ContactEntity): List<Long>
 
     @Update
     suspend fun update(vararg items: ContactEntity)
 
-
     @Query("UPDATE contacts SET serverId = :serverId, pendingSync = 0, updatedAt = :updatedAt WHERE id = :localId")
     suspend fun setServerIdAndSynced(localId: Long, serverId: Long, updatedAt: Long = System.currentTimeMillis())
-
 
     @Query("UPDATE contacts SET pendingSync = 0, updatedAt = :updatedAt WHERE id = :localId")
     suspend fun clearPendingSync(localId: Long, updatedAt: Long = System.currentTimeMillis())
@@ -33,4 +32,7 @@ interface ContactDao {
 
     @Query("DELETE FROM contacts WHERE id = :id")
     suspend fun deleteById(id: Long)
+
+    @Query("SELECT * FROM contacts WHERE id = :id")
+    suspend fun getById(id: Long): ContactEntity?
 }

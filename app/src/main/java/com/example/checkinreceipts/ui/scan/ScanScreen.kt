@@ -1,5 +1,6 @@
 @file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 package com.example.checkinreceipts.ui.scan
+
 import android.app.Application
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -7,13 +8,18 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,11 +40,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.layout.PaddingValues
 
 @Composable
 fun ScanScreen(
@@ -55,6 +65,7 @@ fun ScanScreen(
     ) { uri: Uri? ->
         uri?.let { vm.ocrFromUri(it) }
     }
+    val scroll = rememberScrollState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -71,13 +82,15 @@ fun ScanScreen(
                 )
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snack) }
+        snackbarHost = { SnackbarHost(hostState = snack) },
+        modifier = Modifier.imePadding()
     ) { padding ->
         Column(
             Modifier
                 .padding(padding)
                 .padding(horizontal = 16.dp, vertical = 12.dp)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .verticalScroll(scroll),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
@@ -87,11 +100,36 @@ fun ScanScreen(
             )
             Button(
                 onClick = { launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            ) { Text("Pick image and recognize") }
+                ),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 10.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Image,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    Spacer(Modifier.padding(horizontal = 6.dp))
+                    Text(
+                        text = "Pick a image",
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            platformStyle = PlatformTextStyle(includeFontPadding = false),
+                            letterSpacing = 0.1.sp
+                        )
+                    )
+                }
+            }
             Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
             Text(
                 text = "Extracted fields",
@@ -145,7 +183,7 @@ fun ScanScreen(
                 )
                 LaunchedEffect(ui.error) { snack.showSnackbar(ui.error!!) }
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(24.dp))
             if (ui.rawText.isNotBlank()) {
                 Text(
                     text = "Identified raw text",
@@ -156,6 +194,7 @@ fun ScanScreen(
                     ui.rawText,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                 )
+                Spacer(Modifier.height(24.dp))
             }
         }
     }
