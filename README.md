@@ -1,134 +1,73 @@
-receipt-por-2026
-On‑Site Check‑in and Receipt Assistant (Android, Kotlin, Jetpack Compose)
+# receipt-por-2026 · On‑Site Check‑in and Receipt Assistant (Android · Kotlin · Jetpack Compose)
 
-Demo video
+[![Android CI](https://img.shields.io/badge/Android%20CI-passing-brightgreen)](https://github.com/Azuredragon0515/receipt-por-2026/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+A lightweight, offline‑first Android app that helps event/market organizers do on‑site check‑in and manage digital receipts. It uses on‑device text recognition (ML Kit), Room for local storage, biometric gating for sensitive actions, and minimal web API integration for contacts.
 
-GitHub repository
+- Repo: https://github.com/Azuredragon0515/receipt-por-2026  
+- Latest green CI run: https://github.com/Azuredragon0515/receipt-por-2026/actions/runs/21060892028  
+- Suggested tag for demo: `v0.1-cw2-demo` (see Releases)
 
-https://github.com/Azuredragon0515/receipt-por-2026
-Quick start
+## Features
+- Receipts
+  - Pick from gallery or capture image; ML Kit Text Recognition extracts header/date/total
+  - Editable fields before saving; optional save original image
+- Check‑in
+  - Fused Location Provider (5s interval, 2s fastest) for on‑site verification
+  - Biometric‑guarded JSON export; share/export to files
+- Contacts (web API demo)
+  - Fetch list, simple create/delete against a demo endpoint
+- Sensors & Security
+  - Accelerometer “shake‑to‑add” record (toggle in Settings)
+  - BiometricPrompt for sensitive actions with numeric fallback
+- Offline‑first data model
+  - Room (SQLite) for records and contacts, SharedPreferences for settings
+  - JSON export for audit/sharing; minimal networking (Volley/HTTP)
 
-Requirements
-Android Studio Giraffe or newer
-JDK 17
-minSdk 24
-Run
-Clone this repo
-Open the project root in Android Studio
-Let Gradle sync finish
-Connect a device or start an emulator
-Run the “app” configuration (Debug)
-Overview
-This app helps event/market organizers do on‑site check‑in and manage digital receipts. It is offline‑first, keeps only necessary structured data by default, and supports light cloud/HTTP integration for demo purposes.
+## Tech stack
+- Language: Kotlin
+- UI: Jetpack Compose
+- Architecture: ViewModel + StateFlow + Repository + Room (Entities/DAO, compile‑time SQL checks)
+- ML/AI: ML Kit Text Recognition; optional Image Labeling
+- Sensors & OS: Biometric, Fused Location, SensorManager (accelerometer)
+- Networking: Volley / simple HTTP endpoint
+- Build: Gradle (AGP), GitHub Actions Android CI
 
-Features
+## Screens (emulator)
+<!-- 可替换为你仓库中的图 paths，如 docs/screens/*.png -->
+- Receipts list, Contacts list, Check‑in (biometric export preview), Settings (API base URL, radius, toggles), Scan page
 
-Receipts
-Pick from gallery or capture via camera
-ML Kit Text Recognition extracts header, date, and total (editable)
-Optional: image labeling for quick categories (food/ticket/merch etc.)
-Stores structured fields only by default (raw images off by default)
-Export receipts as JSON with timestamp; protected by biometric prompt
-Check‑in
-Fused Location Provider; 5 s interval, 2 s fastest interval
-Configurable radius to confirm arrival
-Contacts (network demo)
-Simple list/create/delete via a demo HTTP endpoint (Volley)
-Illustrates offline‑first thinking and eventual consistency
-Settings
-Check‑in radius, backend base URL, save raw images toggle
-Security & privacy
-AndroidX Biometric gates sensitive actions (export/delete)
-Store minimal data by default to reduce privacy risks
-CI
-GitHub Actions “Android CI” workflow:
-checkout → set up Temurin JDK 17 → chmod +x gradlew → ./gradlew help
-UI and interaction
+## Build & Run
+1. Requirements: Android Studio Giraffe+ (or newer), JDK 17, minSdk 24
+2. Clone: `git clone https://github.com/Azuredragon0515/receipt-por-2026`
+3. Open the project root in Android Studio，等待 Gradle 同步完成
+4. Select “app” configuration → Run on emulator or a physical device
 
-Jetpack Compose
-Clear loading/empty/error states
-Accelerometer “shake to add note” demo
-Runtime permissions with concise rationale (camera, storage, location)
-Data and persistence
+## Settings
+- API Base URL: default `https://jsonplaceholder.typicode.com/`
+- Check‑in radius (meters)
+- Save original image: on/off
+- Enable shake to add: on/off
 
-Room on SQLite
-Records: id, type (text/label/check‑in), note, lat, lng, createdAt…
-Contacts: id, name, phone, remoteId, updatedAt…
-SharedPreferences for lightweight app settings
-File I/O for JSON export (audit/sharing)
-Offline‑first with eventual consistency: writes land locally offline; sync later
-Architecture and stack
+## Permissions & Privacy
+- Camera/Photos: receipt image selection/capture and on‑device OCR
+- Location: on‑site check‑in (interval 5s; fastest 2s; only while relevant screens are visible)
+- Biometric: gate export/delete
+- Storage/Share: JSON export and share
+- Data minimization: by default only structured OCR fields are stored; raw images optional. Exported files exclude API tokens and sensitive secrets.
 
-Kotlin + Jetpack Compose
-MVVM + Repository + StateFlow
-Room (entities/DAOs/compile‑time query checks)
-ML Kit Text Recognition (OCR), optional Image Labeling
-Fused Location Provider + SensorManager (Accelerometer)
-AndroidX Biometric
-Volley for simple networking
-Gradle Wrapper; Android CI via GitHub Actions
-Why native Android (vs Flutter/React Native)
+## Demo video (to be added)
+A 10‑minute screencast will cover: OCR→save, check‑in→biometric JSON export/share, contacts API fetch/delete, settings toggles, shake‑to‑add, and code walkthrough (Room/Repository, OCR pipeline, biometric, JSON export).
 
-Deeper integration with hardware/security (Biometric, Fused Location, sensors, runtime permissions, notification channels)
-Structure and testability (ViewModel/StateFlow/Repository/Room, strong typing, unidirectional data flow)
-Performance/energy for camera and continuous sensor use
-Cross‑platform remains possible later (e.g., Flutter), but this project focuses on deep sensor/security integration
-Grading checklist mapping (for tutors)
+## Testing & CI
+- GitHub Actions: Android CI on push (build ~30s)
+- Unit tests: lightweight JVM tests for JSON export formatting and shake detection logic (no device needed)
 
-Version Control & Testing
-Multiple commits and a merged PR
-GitHub Actions workflow at .github/workflows/android-ci.yml; green runs in Actions
-Layout & Design
-Compose UI with responsive behavior and loading/empty/error states
-Data Persistence
-Room local DB, JSON export, demo web endpoint; offline‑first with eventual consistency rationale
-Programming Language
-Kotlin + Compose; MVVM/Repository; multiple Android/3rd‑party APIs (ML Kit, Volley, Biometric)
-Sensors/Hardware & AI
-ML Kit OCR (+ optional labeling)
-Fused Location + Accelerometer + Biometric
-Project structure (short)
+## Roadmap
+- Improve real‑device UI layout, finalize contacts create flow
+- Optional: Firestore/Storage/FCM integration (production path), HTTPS/reverse proxy
+- Instrumented tests and sensors stress tests
 
-app/
-data/ (entities, DAOs, repositories)
-ui/ (screens: Receipts, Scan, Contacts, Check‑in, Settings)
-viewmodel/ (state/intents)
-ml/ (OCR and optional labeling wrappers)
-utils/ (permissions, time, formatting, etc.)
-.github/workflows/android-ci.yml (CI)
-Privacy and compliance
-
-By default, only structured fields are stored, not raw images
-Biometric prompt before export/delete operations
-Demo endpoint is for teaching; production should use HTTPS, tokens, RBAC, least‑privilege, and retention policies
-Known limitations and future work
-
-OCR robustness on extreme receipt layouts can be improved (post‑processing/regex)
-Optional Cloud: Firestore/Storage for multi‑device sync and controlled raw image storage
-Add unit tests and UI tests
-Improve accessibility (TalkBack, semantics)
-Build & CI notes
-
-Gradle Wrapper included; CI uses Temurin JDK 17
-Workflow steps: checkout → setup‑java → chmod +x gradlew → ./gradlew help
-Triggers on PRs and pushes to main
-License
-
-MIT License (see LICENSE)
-Acknowledgements
-
-ML Kit documentation and samples
-Android Developers documentation
-Course lab snippets (attributed in source comments)
-Submission checklist (per brief)
-
-Provide two links in your submission file:
-10‑minute demo video (≥720p) showing features and key code
-GitHub repository link (this repo)
-If required, also upload a ZIP of the full project (you may exclude build/ to reduce size)
-Usage tips
-
-Grant runtime permissions (camera/storage/location) on first run
-Configure check‑in radius and backend base URL in Settings
-Biometric prompt will be shown before exporting JSON
+## License
+MIT
