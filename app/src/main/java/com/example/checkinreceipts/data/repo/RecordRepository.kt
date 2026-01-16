@@ -10,8 +10,13 @@ import kotlinx.coroutines.runBlocking
 class RecordRepository private constructor(context: Context) {
     private val db = DatabaseProvider.get(context as android.app.Application)
     private val recordDao = db.recordDao()
+
     fun observeAll(): Flow<List<Record>> =
         recordDao.getAllFlow().map { list -> list.map { it.toDomain() } }
+
+    suspend fun getLatestCheckIn(): Record? {
+        return recordDao.getLatestByType("check-in")?.toDomain()
+    }
 
     suspend fun add(record: Record): Long {
         return recordDao.insert(record.toEntity())
@@ -25,6 +30,28 @@ class RecordRepository private constructor(context: Context) {
         return recordDao.insertAll(records.map { it.toEntity() })
     }
 
+    suspend fun insertCheckIn(
+        latitude: Double,
+        longitude: Double,
+        accuracy: Float,
+        note: String? = null,
+        createdAt: Long = System.currentTimeMillis()
+    ): Long {
+        val record = Record(
+            id = 0L,
+            header = null,
+            dateText = null,
+            totalText = null,
+            note = note,
+            type = "check-in",
+            latitude = latitude,
+            longitude = longitude,
+            accuracy = accuracy,
+            createdAt = createdAt
+        )
+        return add(record)
+    }
+
     suspend fun quickAddNote(note: String): Long {
         val now = System.currentTimeMillis()
         val record = Record(
@@ -33,6 +60,10 @@ class RecordRepository private constructor(context: Context) {
             dateText = null,
             totalText = null,
             note = note,
+            type = null,
+            latitude = null,
+            longitude = null,
+            accuracy = null,
             createdAt = now
         )
         return add(record)
@@ -59,6 +90,10 @@ private fun com.example.checkinreceipts.data.entity.RecordEntity.toDomain(): com
         dateText = dateText,
         totalText = totalText,
         note = note,
+        type = type,
+        latitude = latitude,
+        longitude = longitude,
+        accuracy = accuracy,
         createdAt = createdAt
     )
 
@@ -69,5 +104,9 @@ private fun com.example.checkinreceipts.domain.model.Record.toEntity(): RecordEn
         dateText = dateText,
         totalText = totalText,
         note = note,
+        type = type,
+        latitude = latitude,
+        longitude = longitude,
+        accuracy = accuracy,
         createdAt = createdAt
     )

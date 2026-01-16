@@ -89,20 +89,18 @@ fun SettingsScreen(
                 Switch(checked = enableShake, onCheckedChange = { enableShake = it })
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Button(onClick = {
-                    runBlocking {
-                        ds.setApiBaseUrl(apiBase.trim())
-                        ds.setCheckInRadiusM(radius.toIntOrNull() ?: 200)
-                        ds.setSaveOriginalImage(saveOriginal)
-                        ds.setEnableShakeToAdd(enableShake)
-                    }
-                    onBackClick()
-                }) { Text("Save") }
-
-                Button(onClick = onGoContacts) {
-                    Text("Manage Contacts")
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Button(
+                    onClick = { /* save */ },
+                    modifier = Modifier.weight(1f)
+                ) { Text("Save") }
+                Button(
+                    onClick = onGoContacts,
+                    modifier = Modifier.weight(1f)
+                ) { Text("Manage") }
             }
         }
     }

@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.Flow
 interface RecordDao {
     @Query("SELECT * FROM records ORDER BY createdAt DESC")
     fun getAllFlow(): Flow<List<RecordEntity>>
+
+    @Query("SELECT * FROM records WHERE type = :type ORDER BY createdAt DESC LIMIT 1")
+    suspend fun getLatestByType(type: String): RecordEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: RecordEntity): Long
 

@@ -1,7 +1,11 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
 package com.example.checkinreceipts.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,11 +14,9 @@ import com.example.checkinreceipts.ui.list.RecordsListScreen
 import com.example.checkinreceipts.ui.scan.ScanScreen
 import com.example.checkinreceipts.ui.checkin.CheckInScreen
 import com.example.checkinreceipts.ui.settings.SettingsScreen
-import androidx.compose.ui.platform.LocalContext
+import com.example.checkinreceipts.ui.contacts.ContactsScreen
 import com.example.checkinreceipts.data.repo.RecordRepository
 import com.example.checkinreceipts.data.export.Exporter
-import com.example.checkinreceipts.ui.contacts.ContactsScreen
-import androidx.compose.material3.ExperimentalMaterial3Api
 
 object Routes {
     const val List = "list"
@@ -24,7 +26,6 @@ object Routes {
     const val Contacts = "contacts"
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(navController: NavHostController = rememberNavController()) {
     NavHost(navController, startDestination = Routes.List) {
@@ -49,7 +50,11 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
             val exporter = remember { Exporter(ctx, repo) }
             CheckInScreen(
                 onBackClick = { navController.popBackStack() },
-                exportAction = { exporter.exportAll() }
+                exportAction = {
+                    val file = exporter.exportAll()
+                    val jsonText = file.readText()
+                    file.absolutePath to jsonText
+                }
             )
         }
         composable(Routes.Settings) {

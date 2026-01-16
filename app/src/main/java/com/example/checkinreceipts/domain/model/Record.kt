@@ -9,5 +9,9 @@ data class Record(
     val dateText: String?,
     val totalText: String?,
     val note: String? = null,
+    val type: String? = null,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val accuracy: Float? = null,
     val createdAt: Long = System.currentTimeMillis()
 )

@@ -71,3 +71,4 @@ A 10‑minute screencast will cover: OCR→save, check‑in→biometric JSON exp
 
 ## License
 MIT
+
